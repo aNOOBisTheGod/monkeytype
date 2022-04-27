@@ -1,21 +1,22 @@
-import { InsertManyResult, InsertOneResult } from "mongodb";
+import { InsertManyResult, InsertOneResult, ObjectId } from "mongodb";
 import db from "../init/db";
 
 async function addCommand(
-  command,
-  commandArguments
+  command: string,
+  commandArguments: any[]
 ): Promise<InsertOneResult<any>> {
   return await db.collection<any>("bot-tasks").insertOne({
-    command,
-    arguments: commandArguments,
+    _id: new ObjectId(),
+    name: command,
+    args: commandArguments,
     executed: false,
     requestTimestamp: Date.now(),
   });
 }
 
 async function addCommands(
-  commands,
-  commandArguments
+  commands: string[],
+  commandArguments: any[][]
 ): Promise<void | InsertManyResult> {
   if (commands.length === 0 || commands.length !== commandArguments.length) {
     return;
@@ -23,8 +24,9 @@ async function addCommands(
 
   const normalizedCommands = commands.map((command, index) => {
     return {
-      command,
-      arguments: commandArguments[index],
+      _id: new ObjectId(),
+      name: command,
+      args: commandArguments[index],
       executed: false,
       requestTimestamp: Date.now(),
     };
