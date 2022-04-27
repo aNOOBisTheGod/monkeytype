@@ -5,7 +5,7 @@ async function addCommand(
   command,
   commandArguments
 ): Promise<InsertOneResult<any>> {
-  return await db.collection<any>("bot-commands").insertOne({
+  return await db.collection<any>("bot-tasks").insertOne({
     command,
     arguments: commandArguments,
     executed: false,
@@ -30,7 +30,7 @@ async function addCommands(
     };
   });
 
-  return await db.collection("bot-commands").insertMany(normalizedCommands);
+  return await db.collection("bot-tasks").insertMany(normalizedCommands);
 }
 
 class BotDAO {
@@ -61,7 +61,9 @@ class BotDAO {
       return;
     }
 
-    const leaderboardCommands = Array(newRecords.length).fill("sayLbUpdate");
+    const leaderboardCommands = Array(newRecords.length).fill(
+      "announceLeaderboardUpdate"
+    );
     const leaderboardCommandsArguments = newRecords.map((newRecord) => {
       return [
         newRecord.discordId ?? newRecord.name,
