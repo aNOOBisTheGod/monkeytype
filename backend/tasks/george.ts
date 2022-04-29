@@ -73,7 +73,7 @@ class George {
     await this.jobQueue.add(task, awardChallengeTask);
   }
 
-  static async announceLbUpdate(
+  static async announceLeaderboardUpdate(
     newRecords: any[],
     leaderboardId: string
   ): Promise<void> {

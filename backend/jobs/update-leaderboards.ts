@@ -56,7 +56,7 @@ async function updateLeaderboardAndNotifyChanges(
     const leaderboardId = `time ${leaderboardTime} english`;
 
     if (cachedConfig.useRedisForBotTasks.enabled) {
-      await George.announceLbUpdate(newRecords, leaderboardId);
+      await George.announceLeaderboardUpdate(newRecords, leaderboardId);
     }
 
     await BotDAO.announceLbUpdate(newRecords, leaderboardId);
