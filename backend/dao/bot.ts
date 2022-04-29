@@ -1,58 +1,58 @@
 import { InsertManyResult, InsertOneResult, ObjectId } from "mongodb";
 import db from "../init/db";
 
-async function addCommand(
-  command: string,
-  commandArguments: any[]
+async function addTask(
+  taskName: string,
+  taskArgs: any[]
 ): Promise<InsertOneResult<any>> {
   return await db.collection<any>("bot-tasks").insertOne({
     _id: new ObjectId(),
-    name: command,
-    args: commandArguments,
+    name: taskName,
+    args: taskArgs,
     executed: false,
     requestTimestamp: Date.now(),
   });
 }
 
-async function addCommands(
-  commands: string[],
-  commandArguments: any[][]
+async function addTasks(
+  tasks: string[],
+  taskArgsArray: any[][]
 ): Promise<void | InsertManyResult> {
-  if (commands.length === 0 || commands.length !== commandArguments.length) {
+  if (tasks.length === 0 || tasks.length !== taskArgsArray.length) {
     return;
   }
 
-  const normalizedCommands = commands.map((command, index) => {
+  const normalizedTasks = tasks.map((taskName, index) => {
     return {
       _id: new ObjectId(),
-      name: command,
-      args: commandArguments[index],
+      name: taskName,
+      args: taskArgsArray[index],
       executed: false,
       requestTimestamp: Date.now(),
     };
   });
 
-  return await db.collection("bot-tasks").insertMany(normalizedCommands);
+  return await db.collection("bot-tasks").insertMany(normalizedTasks);
 }
 
 class BotDAO {
   static async updateDiscordRole(discordId, wpm): Promise<InsertOneResult> {
-    return await addCommand("updateRole", [discordId, wpm]);
+    return await addTask("updateRole", [discordId, wpm]);
   }
 
   static async linkDiscord(uid, discordId): Promise<InsertOneResult> {
-    return await addCommand("linkDiscord", [discordId, uid]);
+    return await addTask("linkDiscord", [discordId, uid]);
   }
 
   static async unlinkDiscord(uid, discordId): Promise<InsertOneResult> {
-    return await addCommand("unlinkDiscord", [discordId, uid]);
+    return await addTask("unlinkDiscord", [discordId, uid]);
   }
 
   static async awardChallenge(
     discordId,
     challengeName
   ): Promise<InsertOneResult> {
-    return await addCommand("awardChallenge", [discordId, challengeName]);
+    return await addTask("awardChallenge", [discordId, challengeName]);
   }
 
   static async announceLbUpdate(
@@ -63,10 +63,10 @@ class BotDAO {
       return;
     }
 
-    const leaderboardCommands = Array(newRecords.length).fill(
+    const leaderboardTasks = Array(newRecords.length).fill(
       "announceLeaderboardUpdate"
     );
-    const leaderboardCommandsArguments = newRecords.map((newRecord) => {
+    const leaderboardTasksArguments = newRecords.map((newRecord) => {
       return [
         newRecord.discordId ?? newRecord.name,
         newRecord.rank,
@@ -78,7 +78,7 @@ class BotDAO {
       ];
     });
 
-    return await addCommands(leaderboardCommands, leaderboardCommandsArguments);
+    return await addTasks(leaderboardTasks, leaderboardTasksArguments);
   }
 }
 

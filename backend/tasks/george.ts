@@ -6,14 +6,14 @@ import { isConnected } from "../init/redis";
 const QUEUE_NAME = "george-tasks";
 
 interface GeorgeTask {
-  command: string;
-  arguments: any[];
+  name: string;
+  args: any[];
 }
 
-function buildGeorgeTask(command: string, taskArguments: any[]): GeorgeTask {
+function buildGeorgeTask(task: string, taskArgs: any[]): GeorgeTask {
   return {
-    command,
-    arguments: taskArguments,
+    name: task,
+    args: taskArgs,
   };
 }
 
@@ -44,43 +44,43 @@ class George {
     discordId: string,
     wpm: number
   ): Promise<void> {
-    const command = "updateRole";
-    const updateDiscordRoleTask = buildGeorgeTask(command, [discordId, wpm]);
-    await this.jobQueue.add(command, updateDiscordRoleTask);
+    const task = "updateRole";
+    const updateDiscordRoleTask = buildGeorgeTask(task, [discordId, wpm]);
+    await this.jobQueue.add(task, updateDiscordRoleTask);
   }
 
   static async linkDiscord(discordId: string, uid: string): Promise<void> {
-    const command = "linkDiscord";
-    const linkDiscordTask = buildGeorgeTask(command, [discordId, uid]);
-    await this.jobQueue.add(command, linkDiscordTask);
+    const task = "linkDiscord";
+    const linkDiscordTask = buildGeorgeTask(task, [discordId, uid]);
+    await this.jobQueue.add(task, linkDiscordTask);
   }
 
   static async unlinkDiscord(discordId: string, uid: string): Promise<void> {
-    const command = "unlinkDiscord";
-    const unlinkDiscordTask = buildGeorgeTask(command, [discordId, uid]);
-    await this.jobQueue.add(command, unlinkDiscordTask);
+    const task = "unlinkDiscord";
+    const unlinkDiscordTask = buildGeorgeTask(task, [discordId, uid]);
+    await this.jobQueue.add(task, unlinkDiscordTask);
   }
 
   static async awardChallenge(
     discordId: string,
     challengeName: string
   ): Promise<void> {
-    const command = "awardChallenge";
-    const awardChallengeTask = buildGeorgeTask(command, [
+    const task = "awardChallenge";
+    const awardChallengeTask = buildGeorgeTask(task, [
       discordId,
       challengeName,
     ]);
-    await this.jobQueue.add(command, awardChallengeTask);
+    await this.jobQueue.add(task, awardChallengeTask);
   }
 
   static async announceLbUpdate(
     newRecords: any[],
     leaderboardId: string
   ): Promise<void> {
-    const command = "announceLbUpdate";
+    const task = "announceLbUpdate";
 
     const leaderboardUpdateTasks = newRecords.map((record) => {
-      const taskData = buildGeorgeTask(command, [
+      const taskData = buildGeorgeTask(task, [
         record.discordId ?? record.name,
         record.rank,
         leaderboardId,
@@ -91,7 +91,7 @@ class George {
       ]);
 
       return {
-        name: command,
+        name: task,
         data: taskData,
       };
     });
